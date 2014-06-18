@@ -54,21 +54,48 @@ static const int COST_TO_CHOOSE = 1;
             self.operation = [NSString stringWithFormat:@"Unchose card %@", card];
         } else {
             // match against other chosen cards
-            for (Card *otherCard in self.cards) {
-                if (otherCard.isChosen && !otherCard.isMatched) {
-                    int matchScore = [card match:@[otherCard]];
-                    if (matchScore) {
+            if (self.threeCardsMode) {
+                NSMutableArray *otherCards = [[NSMutableArray alloc] init];
+                for (Card *otherCard in self.cards) {
+                    if (otherCard.isChosen && !otherCard.isMatched) {
+                        [otherCards addObject:otherCard];
+                    }
+                }
+                if ([otherCards count] == 2){
+                    int matchScore = [card match:otherCards];
+                    Card *secondCard = (Card *)[otherCards firstObject];
+                    Card *thirdCard = (Card *)[otherCards lastObject];
+                    if(matchScore) {
                         NSInteger matchScoreWithBonus = matchScore * MATCH_BONUS;
                         self.score += matchScoreWithBonus;
                         card.matched = YES;
-                        otherCard.matched = YES;
-                        self.operation = [NSString stringWithFormat:@"Card %@ matched card %@ for  a score of %d", card, otherCard, matchScoreWithBonus];
+                        secondCard.matched = YES;
+                        thirdCard.matched = YES;
+                        self.operation = [NSString stringWithFormat:@"Matched %@, %@ and %@ for %ld points", card, secondCard, thirdCard, (long)matchScoreWithBonus];
                     } else {
                         self.score -= MISMATCH_PENALTY;
-                        otherCard.chosen = NO;
-                        self.operation = [NSString stringWithFormat:@"Card %@ did not match card %@. Penalty of %d", card, otherCard, MISMATCH_PENALTY];
+                        secondCard.chosen = NO;
+                        thirdCard.chosen = NO;
+                        self.operation = [NSString stringWithFormat:@"%@, %@ and %@ don't match! %d point penalty!", card, secondCard, thirdCard, MISMATCH_PENALTY];
                     }
-                    break;
+                }
+            } else {
+                for (Card *otherCard in self.cards) {
+                    if (otherCard.isChosen && !otherCard.isMatched) {
+                        int matchScore = [card match:@[otherCard]];
+                        if (matchScore) {
+                            NSInteger matchScoreWithBonus = matchScore * MATCH_BONUS;
+                            self.score += matchScoreWithBonus;
+                            card.matched = YES;
+                            otherCard.matched = YES;
+                            self.operation = [NSString stringWithFormat:@"Matched %@ %@ for %ld points", card, otherCard, (long)matchScoreWithBonus];
+                        } else {
+                            self.score -= MISMATCH_PENALTY;
+                            otherCard.chosen = NO;
+                            self.operation = [NSString stringWithFormat:@"%@ %@ don't match! %d point penalty!", card, otherCard, MISMATCH_PENALTY];
+                        }
+                        break;
+                    }
                 }
             }
             if ([self.operation isEqualToString:@""]) {

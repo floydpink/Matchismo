@@ -51,9 +51,21 @@
     if ([otherCards count] == 1) {
         PlayingCard *otherCard = [otherCards firstObject];
         if (otherCard.rank == self.rank) {
-            score = 4;
+            score = 16;  // 1 out of 3
         } else if ([otherCard.suit isEqualToString:self.suit]) {
-            score = 1;
+            score = 4;  // 1 out of 12
+        }
+    } else if ([otherCards count] == 2) {
+        PlayingCard *secondCard = [otherCards firstObject];
+        PlayingCard *thirdCard = [otherCards lastObject];
+        if (secondCard.rank == self.rank && thirdCard.rank == self.rank) {
+            score = 64;  // 2 out of 3
+        } else if (secondCard.suit == self.suit && thirdCard.suit == self.suit) {
+            score = 16;  // 2 out of 12
+        } else if (secondCard.rank == self.rank || thirdCard.rank == self.rank || secondCard.rank == thirdCard.rank) {
+            score = 4;  // 1 out of 6
+        } else if (secondCard.suit == self.suit || thirdCard.suit == self.suit || secondCard.suit == thirdCard.suit) {
+            score = 1;  // 1 out of 24
         }
     }
     

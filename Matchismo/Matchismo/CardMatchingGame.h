@@ -21,5 +21,6 @@
 
 @property (nonatomic, readonly) NSInteger score;
 @property (nonatomic, strong, readonly) NSString *operation;
+@property (nonatomic) BOOL threeCardsMode;
 
 @end
