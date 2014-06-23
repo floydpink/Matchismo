@@ -23,7 +23,7 @@
 
 - (CardMatchingGame *)game {
     if (!_game) _game = [[CardMatchingGame alloc] initWithCardCount:[self.cardButtons count] usingDeck:[self createDeck]];
-    _game.threeCardsMode = self.gameMode.selectedSegmentIndex != 0;
+    _game.cardsInPlay = self.gameMode.selectedSegmentIndex + 2;
     return _game;
 }
 
